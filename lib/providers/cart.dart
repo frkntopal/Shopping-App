@@ -42,13 +42,14 @@ class Cart with ChangeNotifier {
     if (_items.containsKey(productId)) {
       //chance quantity
       _items.update(
-          productId,
-          (existingCartItem) => CardItem(
-                id: existingCartItem.id,
-                title: existingCartItem.title,
-                quantity: existingCartItem.quantity + 1,
-                price: existingCartItem.price,
-              ));
+        productId,
+        (existingCartItem) => CardItem(
+          id: existingCartItem.id,
+          title: existingCartItem.title,
+          price: existingCartItem.price,
+          quantity: existingCartItem.quantity + 1,
+        ),
+      );
     } else {
       _items.putIfAbsent(
           productId,
@@ -64,6 +65,11 @@ class Cart with ChangeNotifier {
 
   void removeItem(String productId) {
     _items.remove(productId);
+    notifyListeners();
+  }
+
+  void clear() {
+    _items = {};
     notifyListeners();
   }
 }
