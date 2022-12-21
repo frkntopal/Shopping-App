@@ -65,11 +65,33 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void addProduct() {
+  void addProduct(Product product) {
     //Eğer biz projemizin herhangi bir yerinde bir kodu değiştirirsek veya yeni bir kod eklersek bu kodları ilgilendiren kısımlara nasıl temasta bulunabileceğimizin farkına varmak için ChangeNotifier'i eklemiş olduk,
     //Widgetlere yaptığımız değişiklikler veya güncellemeleri notifyListeners'a bildirmemiz gerekiyor
 
-    //_items.add(value);
+    final newProduct = Product(
+        id: DateTime.now().toString(),
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imagesUrl: product.imagesUrl);
+    _items.add(newProduct);
+
+    notifyListeners();
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0) {
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    } else {
+      print('...');
+    }
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((prod) => prod.id == id);
     notifyListeners();
   }
 }
