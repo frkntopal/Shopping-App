@@ -69,24 +69,23 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     //Eğer biz projemizin herhangi bir yerinde bir kodu değiştirirsek veya yeni bir kod eklersek bu kodları ilgilendiren kısımlara nasıl temasta bulunabileceğimizin farkına varmak için ChangeNotifier'i eklemiş olduk,
     //Widgetlere yaptığımız değişiklikler veya güncellemeleri notifyListeners'a bildirmemiz gerekiyor
     // ignore: unused_local_variable
     var url = Uri.https(
-        'flutter-apps-4cc2f-default-rtdb.firebaseio.com', '/products.json');
-    return http
-        .post(
-      url,
-      body: json.encode({
-        'title': product.title,
-        'description': product.description,
-        'imageUrl': product.imagesUrl,
-        'price': product.price,
-        'isFavorite': product.isFavorite,
-      }),
-    )
-        .then((response) {
+        'flutter-apps-4cc2f-default-rtdb.firebaseio.com'); // '/products.json');
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'title': product.title,
+          'description': product.description,
+          'imageUrl': product.imagesUrl,
+          'price': product.price,
+          'isFavorite': product.isFavorite,
+        }),
+      );
       final newProduct = Product(
           id: json.decode(response.body)['name'],
           title: product.title,
@@ -96,10 +95,10 @@ class Products with ChangeNotifier {
       _items.add(newProduct);
 
       notifyListeners();
-    }).catchError((error) {
+    } catch (error) {
       print(error);
       throw error;
-    });
+    }
   }
 
   void updateProduct(String id, Product newProduct) {
