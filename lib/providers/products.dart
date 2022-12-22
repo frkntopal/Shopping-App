@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import './product.dart';
 
 class Products with ChangeNotifier {
@@ -65,19 +69,37 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     //Eğer biz projemizin herhangi bir yerinde bir kodu değiştirirsek veya yeni bir kod eklersek bu kodları ilgilendiren kısımlara nasıl temasta bulunabileceğimizin farkına varmak için ChangeNotifier'i eklemiş olduk,
     //Widgetlere yaptığımız değişiklikler veya güncellemeleri notifyListeners'a bildirmemiz gerekiyor
+    // ignore: unused_local_variable
+    var url = Uri.https(
+        'flutter-apps-4cc2f-default-rtdb.firebaseio.com', '/products.json');
+    return http
+        .post(
+      url,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'imageUrl': product.imagesUrl,
+        'price': product.price,
+        'isFavorite': product.isFavorite,
+      }),
+    )
+        .then((response) {
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imagesUrl: product.imagesUrl);
+      _items.add(newProduct);
 
-    final newProduct = Product(
-        id: DateTime.now().toString(),
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imagesUrl: product.imagesUrl);
-    _items.add(newProduct);
-
-    notifyListeners();
+      notifyListeners();
+    }).catchError((error) {
+      print(error);
+      throw error;
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
