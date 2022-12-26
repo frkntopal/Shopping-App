@@ -8,7 +8,7 @@ import '../providers/product.dart';
 class ProductItem extends StatelessWidget {
 //   final String id;
 //   final String title;
-//   final String imagesUrl;
+//   final String imageUrl;
 
 //   const ProductItem(this.id, this.title, this.imagesUrl);
 
@@ -45,7 +45,7 @@ class ProductItem extends StatelessWidget {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
+                  content: const Text(
                     'Added item to cart!',
                   ),
                   duration: Duration(seconds: 2),
@@ -69,7 +69,7 @@ class ProductItem extends StatelessWidget {
             );
           },
           child: Image.network(
-            product.imagesUrl,
+            product.imageUrl,
             fit: BoxFit.cover,
           ),
         ),

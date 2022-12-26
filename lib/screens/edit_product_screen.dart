@@ -26,7 +26,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     title: '',
     description: '',
     price: 0,
-    imagesUrl: '',
+    imageUrl: '',
   );
   var _initValues = {
     'title': '',
@@ -48,7 +48,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void didChangeDependencies() {
     if (_isInit) {
       final productId = ModalRoute.of(context)!.settings.arguments as String;
-      if (productId != null.toString()) {
+      if (productId != null) {
         _editedProduct =
             Provider.of<Products>(context, listen: false).findById(productId);
         _initValues = {
@@ -58,7 +58,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           // 'imageUrl': _editedProduct.imagesUrl,
           'imageUrl': '',
         };
-        _imageUrlController.text = _editedProduct.imagesUrl;
+        _imageUrlController.text = _editedProduct.imageUrl;
       }
     }
     _isInit = false;
@@ -84,7 +84,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
               !_imageUrlController.text.endsWith('.jpeg'))) {
         return;
       }
-
       setState(() {});
     }
   } //başka sayfaya geçtiğimizde kayıtlı olan imageurl'i temizlemek için kullandık
@@ -98,14 +97,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
       _isLoading = true;
     });
-
-    if (_editedProduct.id != null.toString()) {
-      Provider.of<Products>(context, listen: false)
+    if (_editedProduct.id != null) {
+      await Provider.of<Products>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop(); //go back to previous page after
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
@@ -114,25 +108,31 @@ class _EditProductScreenState extends State<EditProductScreen> {
         await showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('An error occurreed!'),
-            content: const Text('Something went wrong.'),
-            actions: [
+            title: Text('An error occurred!'),
+            content: Text('Something went wrong.'),
+            actions: <Widget>[
               TextButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                  child: const Text('Okey'))
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              )
             ],
           ),
         );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop(); //go back to previous page after
-
       }
+      // finally {
+      //   setState(() {
+      //     _isLoading = false;
+      //   });
+      //   Navigator.of(context).pop(); //go back to previous page after
+
+      // }
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop(); //go back to previous page after
 
     // Navigator.of(context).pop(); //go back to previous page after
   }
@@ -141,9 +141,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [IconButton(onPressed: _saveForm, icon: Icon(Icons.save))],
+        actions: [
+          IconButton(
+            onPressed: _saveForm,
+            icon: Icon(Icons.save),
+          )
+        ],
         backgroundColor: Color(0x22844BCA),
-        title: Text('Edit Product'),
+        title: const Text('Edit Product'),
       ),
       body: _isLoading
           ? const Center(
@@ -179,7 +184,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           title: value!,
                           description: _editedProduct.description,
                           price: _editedProduct.price,
-                          imagesUrl: _editedProduct.imagesUrl,
+                          imageUrl: _editedProduct.imageUrl,
                         );
                       },
                     ),
@@ -212,7 +217,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           title: _editedProduct.title,
                           description: _editedProduct.description,
                           price: double.parse(value!),
-                          imagesUrl: _editedProduct.imagesUrl,
+                          imageUrl: _editedProduct.imageUrl,
                         );
                       },
                     ),
@@ -238,7 +243,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           title: _editedProduct.title,
                           description: value!,
                           price: _editedProduct.price,
-                          imagesUrl: _editedProduct.imagesUrl,
+                          imageUrl: _editedProduct.imageUrl,
                         );
                       },
                     ),
@@ -288,7 +293,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 title: _editedProduct.title,
                                 description: _editedProduct.description,
                                 price: _editedProduct.price,
-                                imagesUrl: value!,
+                                imageUrl: value!,
                               );
                             },
                           ),

@@ -14,7 +14,7 @@ import './screens/user_products_screen.dart';
 void main() => runApp(const MyHomePage());
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage();
+  const MyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +35,9 @@ class MyHomePage extends StatelessWidget {
         title: 'Shopping',
         theme: ThemeData(
           primaryColor: Color(0x22844BCA),
-          accentColor: Colors.deepOrange,
           fontFamily: 'Lato',
+          colorScheme:
+              ColorScheme.fromSwatch().copyWith(secondary: Colors.deepOrange),
         ),
         home: ProductOverviewScreen(),
         routes: {
