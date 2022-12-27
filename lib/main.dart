@@ -10,6 +10,7 @@ import 'providers/products.dart';
 import './providers/cart.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
+import './screens/auth_screen.dart';
 
 void main() => runApp(const MyHomePage());
 
@@ -34,18 +35,18 @@ class MyHomePage extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Shopping',
         theme: ThemeData(
-          primaryColor: Color(0x22844BCA),
+          primaryColor: Color.fromRGBO(132, 75, 202, 0.133),
           fontFamily: 'Lato',
           colorScheme:
               ColorScheme.fromSwatch().copyWith(secondary: Colors.deepOrange),
         ),
-        home: ProductOverviewScreen(),
+        home: AuthScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
           OrdersScreen.routeName: (ctx) => OrdersScreen(),
           UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
-          EditProductScreen.routeName: (ctx) => EditProductScreen()
+          EditProductScreen.routeName: (ctx) => EditProductScreen(),
         },
       ),
     );

@@ -22,11 +22,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   // ve çoğunlukla bunu form widgetlarıyla yaparsınız ve diğer widgetlarla pek yapmazsınız. Dolayısıyla burada, stateimize yeni bir özellik ekliyoruz.
   // global key aslında hangi tür veriye atıfta bulunacağını açıkça belirtmek için köşeli parantezler ekleyebileceeğiniz genel bir türdür
   var _editedProduct = Product(
-    id: null.toString(),
-    title: '',
-    description: '',
+    id: '',
+    title: 'title',
+    description: 'description',
     price: 0,
-    imageUrl: '',
+    imageUrl: 'imageUrl',
   );
   var _initValues = {
     'title': '',
@@ -46,15 +46,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void didChangeDependencies() {
+    if (ModalRoute.of(context)!.settings.arguments.runtimeType == bool) {
+      _isInit = false;
+    } else {
+      _isInit = true;
+    }
     if (_isInit) {
       final productId = ModalRoute.of(context)!.settings.arguments as String;
-      if (productId != null) {
-        _editedProduct =
-            Provider.of<Products>(context, listen: false).findById(productId);
+      if (productId != '') {
+        _editedProduct = Provider.of<Products>(context).findById(productId);
         _initValues = {
           'title': _editedProduct.title,
-          'description': _editedProduct.description,
           'price': _editedProduct.price.toString(),
+          'description': _editedProduct.description,
+
           // 'imageUrl': _editedProduct.imagesUrl,
           'imageUrl': '',
         };

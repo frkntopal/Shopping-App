@@ -8,7 +8,7 @@ import 'package:shopping_app/models/http_exception.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
-  //ChangeNotifier temelde provider paketinin perde arkasında kullandığı miras alınan widget ile ilgilidir.
+  //ChangeNotifier temelde provider paket n perde arkasında kullandığı miras alınan widget ile ilgilidir.
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -78,6 +78,9 @@ class Products with ChangeNotifier {
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractedData == null) {
+        return;
+      }
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
