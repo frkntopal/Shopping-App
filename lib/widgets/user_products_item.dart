@@ -3,12 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:shopping_app/providers/products.dart';
 import 'package:shopping_app/screens/edit_product_screen.dart';
 
-class UserProductsItem extends StatelessWidget {
+class UserProductItem extends StatelessWidget {
   final String id;
   final String title;
   final String imageUrl;
 
-  UserProductsItem(
+  UserProductItem(
     this.id,
     this.title,
     this.imageUrl,

@@ -17,17 +17,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _descriptionFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
-  final _form = GlobalKey<
-      FormState>(); //Kodunuzun içinden bir widgetle etkileşime girmeniz gerektiğinde buna ihtiyaçduyarsınız.
+  final _form = GlobalKey<FormState>();
+  //Kodunuzun içinden bir widgetle etkileşime girmeniz gerektiğinde buna ihtiyaçduyarsınız.
   // ve çoğunlukla bunu form widgetlarıyla yaparsınız ve diğer widgetlarla pek yapmazsınız. Dolayısıyla burada, stateimize yeni bir özellik ekliyoruz.
   // global key aslında hangi tür veriye atıfta bulunacağını açıkça belirtmek için köşeli parantezler ekleyebileceeğiniz genel bir türdür
   var _editedProduct = Product(
     id: '',
     title: 'title',
     description: 'description',
-    price: 0,
+    price: 0.0,
     imageUrl: 'imageUrl',
   );
+  @override
+  void initState() {
+    _imageUrlFocusNode.addListener(_updateImageUrl);
+    super.initState();
+  }
+
+  var _isInit = true;
   var _initValues = {
     'title': '',
     'description': '',
@@ -35,14 +42,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     'imageUrl': '',
   };
 
-  var _isInit = true;
   var _isLoading = false;
-
-  @override
-  void initState() {
-    _imageUrlFocusNode.addListener(_updateImageUrl);
-    super.initState();
-  }
 
   @override
   void didChangeDependencies() {
@@ -53,14 +53,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
     if (_isInit) {
       final productId = ModalRoute.of(context)!.settings.arguments as String;
-      if (productId != '') {
-        _editedProduct = Provider.of<Products>(context).findById(productId);
+      if (productId != 'newProduct') {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
         _initValues = {
           'title': _editedProduct.title,
-          'price': _editedProduct.price.toString(),
           'description': _editedProduct.description,
-
-          // 'imageUrl': _editedProduct.imagesUrl,
+          'price': _editedProduct.price.toString(),
+          // 'imageUrl': _editedProduct.imageUrl,
           'imageUrl': '',
         };
         _imageUrlController.text = _editedProduct.imageUrl;
@@ -98,23 +98,27 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (!isValid) {
       return;
     }
-    _form.currentState?.save();
+    _form.currentState!.save();
     setState(() {
       _isLoading = true;
     });
+    // ignore: unnecessary_null_comparison
     if (_editedProduct.id != null) {
+      print('work in saveform');
       await Provider.of<Products>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
     } else {
       try {
+        print('work in saveform2');
         await Provider.of<Products>(context, listen: false)
             .addProduct(_editedProduct);
       } catch (error) {
-        await showDialog(
+        // ignore: prefer_void_to_null
+        return showDialog<Null>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text('An error occurred!'),
-            content: Text('Something went wrong.'),
+            title: const Text('An error occurred!'),
+            content: const Text('Something went wrong.'),
             actions: <Widget>[
               TextButton(
                 child: Text('Okay'),
@@ -137,6 +141,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
       _isLoading = false;
     });
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pop(); //go back to previous page after
 
     // Navigator.of(context).pop(); //go back to previous page after

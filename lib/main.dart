@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/screens/splash_screen.dart';
 
 import './screens/edit_product_screen.dart';
 import './screens/cart_screen.dart';
@@ -23,17 +24,29 @@ class MyHomePage extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(
-            create: (context) => Auth(),
+            create: (ctx) => Auth(),
           ),
-          ChangeNotifierProvider(
-            create: (ctx) => Products(),
-          ),
+          ChangeNotifierProxyProvider<Auth, Products>(
+            create: (ctx) => Products('', "", []),
+            update: (ctx, auth, previousProducts) => Products(
+                auth.token,
+                auth.userId,
+                previousProducts == null ? [] : previousProducts.items),
+          ), // Burada giriş yaptıktan sonra ürünlerimizin gelmesini sağladık
           ChangeNotifierProvider(
             create: (ctx) => Cart(),
           ),
-          ChangeNotifierProvider(
-            create: (ctx) => Orders(),
-          )
+          ChangeNotifierProvider.value(
+            value: Auth(),
+          ),
+          ChangeNotifierProxyProvider<Auth, Orders>(
+            create: (ctx) => Orders('', "", []),
+            update: (ctx, auth, previousOrders) => Orders(
+              auth.token,
+              auth.userId,
+              previousOrders == null ? [] : previousOrders.orders,
+            ),
+          ),
         ],
         child: Consumer<Auth>(
           builder: ((ctx, auth, _) => MaterialApp(
@@ -45,12 +58,22 @@ class MyHomePage extends StatelessWidget {
                   colorScheme: ColorScheme.fromSwatch()
                       .copyWith(secondary: Colors.deepOrange),
                 ),
-                home: auth.isAuth ? ProductOverviewScreen() : AuthScreen(),
+                home: auth.isAuth
+                    ? const ProductOverviewScreen()
+                    : FutureBuilder(
+                        future: auth.tryAutoLogin(),
+                        builder: (ctx, authResultSnapshot) =>
+                            authResultSnapshot.connectionState ==
+                                    ConnectionState.waiting
+                                ? const SplashScreen()
+                                : const AuthScreen(),
+                      ),
                 routes: {
                   ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-                  CartScreen.routeName: (ctx) => CartScreen(),
+                  CartScreen.routeName: (ctx) => const CartScreen(),
                   OrdersScreen.routeName: (ctx) => OrdersScreen(),
-                  UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
+                  UserProductsScreen.routeName: (ctx) =>
+                      const UserProductsScreen(),
                   EditProductScreen.routeName: (ctx) => EditProductScreen(),
                 },
               )),
